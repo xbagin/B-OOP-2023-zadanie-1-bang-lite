@@ -22,7 +22,7 @@ public abstract class BlueCard extends Card {
     @Override
     public boolean isPlayable(BangLite bangLite) {
         for (BlueCard card : bangLite.getCurrentPlayer().getCardsOnTable()) {
-            if (Objects.equals(card, this)) {
+            if (Objects.equals(card.getClass(), this.getClass())) {  // if (Objects.equals(card, this)) {
                 return false;
             }
         }
