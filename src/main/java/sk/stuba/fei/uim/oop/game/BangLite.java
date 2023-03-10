@@ -10,11 +10,17 @@ import sk.stuba.fei.uim.oop.game.player.Player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class BangLite {
     private final List<Card> deck;
     private final List<Player> players;
+    private final Random chance;
+    private Player currentPlayer;
+    private Player targetPlayer;
+    private List<Card> targetPlayerDeck;
 
+    public static final int CARDS_TO_DRAW_WHEN_KILL_COUNT = 2;
     private static final int BARREL_COUNT = 2;
     private static final int DYNAMITE_COUNT = 1;
     private static final int PRISON_COUNT = 3;
@@ -26,10 +32,15 @@ public class BangLite {
     private static final int INDIANS_COUNT = 2;
     private static final int MINIMUM_PLAYERS_COUNT = 2;
     private static final int MAXIMUM_PLAYERS_COUNT = 4;
+    private static final int INITIAL_PLAYER_CARDS_COUNT = 4;
 
     public BangLite() {
         this.deck = new ArrayList<>();
         this.players = new ArrayList<>();
+        this.chance = new Random();
+        this.currentPlayer = null;
+        this.targetPlayer = null;
+        this.targetPlayerDeck = null;
         this.preparation();
         this.game();
     }
@@ -43,6 +54,7 @@ public class BangLite {
     private void game() {
         while (this.playersAlive() > 1) {
             ;
+            this.removeDeathPlayers();
         }
         this.showWinner();
     }
@@ -60,6 +72,28 @@ public class BangLite {
             return;
         }
         System.out.println("The winner is: " + winner.getName());
+    }
+
+    private void removeDeathPlayers() {
+        this.players.removeAll(this.collectCardOfDeathPlayers());
+    }
+
+    private List<Player> collectCardOfDeathPlayers() {
+        List<Player> deathPlayers = new ArrayList<>();
+        for (Player player : this.players) {
+            if (!player.isAlive()) {
+                if (!player.getCardsOnTable().isEmpty()) {
+                    this.deck.addAll(player.getCardsInHand());
+                    player.getCardsInHand().clear();
+                }
+                if (!player.getCardsOnTable().isEmpty()) {
+                    this.deck.addAll(player.getCardsOnTable());
+                    player.getCardsOnTable().clear();
+                }
+                deathPlayers.add(player);
+            }
+        }
+        return deathPlayers;
     }
 
     private int playersAlive() {
@@ -116,5 +150,30 @@ public class BangLite {
         for (int i = 0; i < BangLite.INDIANS_COUNT; i++) {
             this.deck.add(new Indians());
         }
+    }
+
+
+    public List<Card> getDeck() {
+        return this.deck;
+    }
+
+    public List<Player> getPlayers() {
+        return this.players;
+    }
+
+    public Player getCurrentPlayer() {
+        return this.currentPlayer;
+    }
+
+    public Player getTargetPlayer() {
+        return this.targetPlayer;
+    }
+
+    public List<Card> getTargetPlayerDeck() {
+        return this.targetPlayerDeck;
+    }
+
+    public Random getChance() {
+        return this.chance;
     }
 }
