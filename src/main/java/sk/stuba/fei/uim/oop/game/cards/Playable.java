@@ -5,4 +5,6 @@ import sk.stuba.fei.uim.oop.game.BangLite;
 public interface Playable {
     void play(BangLite bangLite);
     boolean isPlayable(BangLite bangLite);
+    boolean requireTargetPlayer();
+    boolean requireTargetPlayerDeck();
 }

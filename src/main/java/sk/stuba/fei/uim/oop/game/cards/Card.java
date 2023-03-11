@@ -7,4 +7,14 @@ abstract public class Card implements Playable {
     public boolean isPlayable(BangLite bangLite) {
         return true;
     }
+
+    @Override
+    public boolean requireTargetPlayer() {
+        return false;
+    }
+
+    @Override
+    public boolean requireTargetPlayerDeck() {
+        return false;
+    }
 }

@@ -11,4 +11,9 @@ public class Bang extends BrownCard {
         }
         bangLite.getCurrentPlayer().drawCards(BangLite.CARDS_TO_DRAW_WHEN_KILL_COUNT, bangLite.getDeck());
     }
+
+    @Override
+    public boolean requireTargetPlayer() {
+        return true;
+    }
 }

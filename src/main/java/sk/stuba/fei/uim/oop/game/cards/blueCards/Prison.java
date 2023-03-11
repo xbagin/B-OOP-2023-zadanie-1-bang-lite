@@ -13,4 +13,9 @@ public class Prison extends BlueCard {
     public void play(BangLite bangLite) {
         bangLite.getTargetPlayer().getCardsOnTable().add(this);
     }
+
+    @Override
+    public boolean requireTargetPlayer() {
+        return true;
+    }
 }
