@@ -70,12 +70,18 @@ public class Player {
         }
     }
 
+    public int getLives() {
+        return this.lives;
+    }
+
     public void addLive() {
         this.lives++;
     }
 
     public void removeLive() {
-        this.lives--;
+        if (lives > 0) {
+            this.lives--;
+        }
     }
 
     public boolean isAlive() {

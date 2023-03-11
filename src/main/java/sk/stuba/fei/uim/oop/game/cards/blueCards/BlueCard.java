@@ -16,7 +16,7 @@ public abstract class BlueCard extends Card {
     }
 
     public boolean hasEffect() {
-        return this.chance.nextInt(this.probabilityOneIn) != 0;
+        return this.chance.nextInt(this.probabilityOneIn) == 0;
     }
 
     @Override
