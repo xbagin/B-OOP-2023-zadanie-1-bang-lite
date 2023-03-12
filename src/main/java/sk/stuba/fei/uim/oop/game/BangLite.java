@@ -93,7 +93,7 @@ public class BangLite {
     }
 
     private void printTargetPlayers(List<Player> targetPlayers) {
-        System.out.println("\nTarget players: ");
+        System.out.print("\nTarget players: ");
         for (int i = 0; i < targetPlayers.size(); i++) {
             System.out.print("[" + (i + 1) + "] " + targetPlayers.get(i).getName() + " ");
         }
@@ -163,6 +163,10 @@ public class BangLite {
                     List<Player> targetPlayers = new ArrayList<>(this.players);
                     targetPlayers.remove(this.currentPlayer);
                     targetPlayers.removeIf(player -> !player.isAlive());
+                    if (targetPlayers.isEmpty()) {
+                        System.out.println("This card can not be played.");
+                        continue;
+                    }
                     int decision;
                     do {
                         this.printTargetPlayers(targetPlayers);
@@ -197,6 +201,7 @@ public class BangLite {
                 }
             }
             this.targetPlayer = null;
+            this.targetPlayerDeck = null;
             this.printTable();
         } while (position != 0);
     }
@@ -215,6 +220,7 @@ public class BangLite {
 
     private void checkEffects() {
         this.playerCanPlay = true;
+        List<Card> toRemove = new ArrayList<>();
         this.currentPlayer.getCardsOnTable().forEach(card -> {
             if (card instanceof Dynamite) {
                 if (((BlueCard) card).hasEffect()) {
@@ -228,7 +234,7 @@ public class BangLite {
                         this.playerCanPlay = false;
                     }
                 } else {
-                    this.currentPlayer.getCardsOnTable().remove(card);
+                    toRemove.add(card);  // this.currentPlayer.getCardsOnTable().remove(card);  ConcurrentModificationException
                     this.getPreviousPlayer().getCardsOnTable().add(card);
                 }
             } else if (card instanceof Prison) {
@@ -239,6 +245,7 @@ public class BangLite {
                 System.out.println(this.currentPlayer.getName() + "escaped from the prison.");
             }
         });
+        this.currentPlayer.getCardsOnTable().removeAll(toRemove);
     }
 
     private Player nextPlayer() {

@@ -53,15 +53,17 @@ public class Player {
 
     public boolean dealWithIndians(List<Card> deck) {
         boolean bangFound = false;
+        List<Card> toRemove = new ArrayList<>();
         for (Card card : this.cardsInHand) {
             if (card instanceof Bang) {
-                this.cardsInHand.remove(card);
+                toRemove.add(card);  // this.cardsInHand.remove(card);  ConcurrentModificationException
                 deck.add(card);
                 bangFound = true;
                 this.informUsingCard(card);
                 break;
             }
         }
+        this.cardsInHand.removeAll(toRemove);
         if (!bangFound) {
             this.removeLive();
             this.informLoosingLife();
