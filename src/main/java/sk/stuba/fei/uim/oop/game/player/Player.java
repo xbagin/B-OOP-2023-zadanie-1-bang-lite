@@ -45,7 +45,7 @@ public class Player {
             }
         }
 
-        //live
+        //life
         this.removeLive();
         this.informLoosingLife();
         return this.isAlive();

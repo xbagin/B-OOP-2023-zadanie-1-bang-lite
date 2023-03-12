@@ -56,7 +56,7 @@ public class BangLite {
 
     private void game() {
         while (this.playersAlive() > 1) {
-            System.out.println("\nTurn of " + this.currentPlayer.getName() + ":\n");
+            System.out.println("\nTurn of " + this.currentPlayer.getName() + ":");
             this.checkEffects();
             if (this.playerCanPlay) {
                 this.printTable();
@@ -71,6 +71,7 @@ public class BangLite {
     }
 
     private void printTable() {
+        System.out.println();
         this.players.forEach(player -> {
             System.out.println(player.getName() + (Objects.equals(player, this.currentPlayer) ? " (you):" : ":"));
             System.out.println("  Lives: " + player.getLives());
@@ -94,8 +95,9 @@ public class BangLite {
     private void printTargetPlayers(List<Player> targetPlayers) {
         System.out.println("\nTarget players: ");
         for (int i = 0; i < targetPlayers.size(); i++) {
-            System.out.println("[" + (i + 1) + "] " + targetPlayers.get(i).getName());
+            System.out.print("[" + (i + 1) + "] " + targetPlayers.get(i).getName() + " ");
         }
+        System.out.println();
     }
 
     private void showWinner() {
@@ -107,10 +109,10 @@ public class BangLite {
             }
         }
         if (winner == null) {
-            System.out.println("There is no winner!");
+            System.out.println("\nThere is no winner!");
             return;
         }
-        System.out.println("The winner is: " + winner.getName());
+        System.out.println("\nThe winner is: " + winner.getName() + "!");
     }
 
     private void removeDeathPlayers() {
@@ -160,6 +162,7 @@ public class BangLite {
                 if (card.requireTargetPlayer()) {
                     List<Player> targetPlayers = new ArrayList<>(this.players);
                     targetPlayers.remove(this.currentPlayer);
+                    targetPlayers.removeIf(player -> !player.isAlive());
                     int decision;
                     do {
                         this.printTargetPlayers(targetPlayers);
@@ -179,21 +182,22 @@ public class BangLite {
                             int decision;
                             do {
                                 decision = KeyboardInput.readInt("Enter 1 for removing the card from the hand or 2 for removing the card from the table");
-                                this.targetPlayerDeck = decision == 1 ? this.targetPlayer.getCardsOnTable() : this.targetPlayer.getCardsInHand();
+                                this.targetPlayerDeck = decision == 1 ? this.targetPlayer.getCardsInHand() : this.targetPlayer.getCardsOnTable();
                             } while (!(decision >= 1 && decision <= 2));
                         }
-                    } else {
-                        System.out.println("This card can not be played on this player.");
                     }
                 }
                 if (card.isPlayable(this)) {
                     card.play(this);
+                } else {
+                    System.out.println("This card can not be played" + (this.targetPlayer != null ? "on this player." : "."));
                 }
                 if (this.targetPlayer != null && !this.targetPlayer.isAlive()) {
                     System.out.println(this.targetPlayer.getName() + " lost!");
-                    this.targetPlayer = null;
                 }
             }
+            this.targetPlayer = null;
+            this.printTable();
         } while (position != 0);
     }
 
