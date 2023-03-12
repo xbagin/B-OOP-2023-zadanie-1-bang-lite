@@ -14,7 +14,7 @@ public class Player {
     private final String name;
     private int lives;
     private final List<Card> cardsInHand;
-    private final List<BlueCard> cardsOnTable;
+    private final List<Card> cardsOnTable;
 
     private static final int START_LIVES_COUNT = 4;
 
@@ -27,9 +27,10 @@ public class Player {
 
     public boolean dealWithBang(BangLite bangLite) {
         //barrel
-        for (BlueCard card : this.cardsOnTable) {
+        for (Card card : this.cardsOnTable) {
             if (card instanceof Barrel) {
-                if (card.hasEffect()) {
+                if (((BlueCard) card).hasEffect()) {
+                    this.informUsingCard(card);
                     return this.isAlive();
                 }
             }
@@ -39,12 +40,14 @@ public class Player {
         for (Card card : this.cardsInHand) {
             if (card instanceof Missed) {
                 card.play(bangLite);
+                this.informUsingCard(card);
                 return this.isAlive();
             }
         }
 
         //live
         this.removeLive();
+        this.informLoosingLife();
         return this.isAlive();
     }
 
@@ -55,11 +58,13 @@ public class Player {
                 this.cardsInHand.remove(card);
                 deck.add(card);
                 bangFound = true;
+                this.informUsingCard(card);
                 break;
             }
         }
         if (!bangFound) {
             this.removeLive();
+            this.informLoosingLife();
         }
         return this.isAlive();
     }
@@ -96,7 +101,15 @@ public class Player {
         return this.cardsInHand;
     }
 
-    public List<BlueCard> getCardsOnTable() {
+    public List<Card> getCardsOnTable() {
         return this.cardsOnTable;
+    }
+
+    private void informUsingCard(Card card) {
+        System.out.println("> " + this.getName() + " used " + card.getClass().getSimpleName() + ".");
+    }
+
+    private void informLoosingLife() {
+        System.out.println("> " + this.getName() + " lost a life.");
     }
 }

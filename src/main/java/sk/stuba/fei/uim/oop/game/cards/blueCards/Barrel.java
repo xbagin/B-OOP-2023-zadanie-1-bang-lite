@@ -11,6 +11,7 @@ public class Barrel extends BlueCard {
 
     @Override
     public void play(BangLite bangLite) {
+        super.play(bangLite);
         bangLite.getCurrentPlayer().getCardsOnTable().add(this);
     }
 }

@@ -24,7 +24,11 @@ public class CatBalou extends BrownCard {
 
     @Override
     public boolean isPlayable(BangLite bangLite) {
-        return !bangLite.getTargetPlayerDeck().isEmpty();
+        if (bangLite.getTargetPlayerDeck() == null) {
+            return !bangLite.getTargetPlayer().getCardsOnTable().isEmpty() || !bangLite.getTargetPlayer().getCardsInHand().isEmpty();
+        } else {
+            return !bangLite.getTargetPlayerDeck().isEmpty();
+        }
     }
 
     @Override
