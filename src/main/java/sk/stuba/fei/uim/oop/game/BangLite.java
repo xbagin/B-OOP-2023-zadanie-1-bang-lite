@@ -239,10 +239,11 @@ public class BangLite {
                 }
             } else if (card instanceof Prison) {
                 if (!((BlueCard) card).hasEffect()) {
-                    System.out.println(this.currentPlayer.getName() + "did not escape from the prison.");
+                    System.out.println(this.currentPlayer.getName() + " did not escape from the prison.");
                     this.playerCanPlay = false;
+                } else {
+                    System.out.println(this.currentPlayer.getName() + " escaped from the prison.");
                 }
-                System.out.println(this.currentPlayer.getName() + "escaped from the prison.");
             }
         });
         this.currentPlayer.getCardsOnTable().removeAll(toRemove);
