@@ -175,7 +175,7 @@ public class BangLite {
                     this.targetPlayer = targetPlayers.get(decision - 1);
                 }
                 if (card.requireTargetPlayerDeck()) {
-                    if (card.isPlayable(this)) {
+                    if (card.isPlayable()) {
                         boolean inHand = !this.targetPlayer.getCardsInHand().isEmpty();
                         boolean onTable = !this.targetPlayer.getCardsOnTable().isEmpty();
                         if (inHand && !onTable) {
@@ -191,8 +191,8 @@ public class BangLite {
                         }
                     }
                 }
-                if (card.isPlayable(this)) {
-                    card.play(this);
+                if (card.isPlayable()) {
+                    card.play();
                 } else {
                     System.out.println("This card can not be played" + (this.targetPlayer != null ? "on this player." : "."));
                 }
@@ -290,54 +290,34 @@ public class BangLite {
 
     private void addBlueCards() {
         for (int i = 0; i < BangLite.BARREL_COUNT; i++) {
-            this.deck.add(new Barrel());
+            this.deck.add(new Barrel(this.currentPlayer));
         }
         for (int i = 0; i < BangLite.DYNAMITE_COUNT; i++) {
-            this.deck.add(new Dynamite());
+            this.deck.add(new Dynamite(this.currentPlayer));
         }
         for (int i = 0; i < BangLite.PRISON_COUNT; i++) {
-            this.deck.add(new Prison());
+            this.deck.add(new Prison(this.targetPlayer));
         }
     }
 
     private void addBrownCards() {
         for (int i = 0; i < BangLite.BANG_COUNT; i++) {
-            this.deck.add(new Bang());
+            this.deck.add(new Bang(this.currentPlayer, this.deck, this.targetPlayer));
         }
         for (int i = 0; i < BangLite.MISSED_COUNT; i++) {
-            this.deck.add(new Missed());
+            this.deck.add(new Missed(this.currentPlayer, this.deck, this.targetPlayer));
         }
         for (int i = 0; i < BangLite.BEER_COUNT; i++) {
-            this.deck.add(new Beer());
+            this.deck.add(new Beer(this.currentPlayer, this.deck));
         }
         for (int i = 0; i < BangLite.CAT_BALOU_COUNT; i++) {
-            this.deck.add(new CatBalou());
+            this.deck.add(new CatBalou(this.currentPlayer, this.deck, this.targetPlayer, this.targetPlayerDeck));
         }
         for (int i = 0; i < BangLite.STAGECOACH_COUNT; i++) {
-            this.deck.add(new Stagecoach());
+            this.deck.add(new Stagecoach(this.currentPlayer, this.deck));
         }
         for (int i = 0; i < BangLite.INDIANS_COUNT; i++) {
-            this.deck.add(new Indians());
+            this.deck.add(new Indians(this.currentPlayer, this.deck, this.players));
         }
-    }
-
-    public List<Card> getDeck() {
-        return this.deck;
-    }
-
-    public List<Player> getPlayers() {
-        return this.players;
-    }
-
-    public Player getCurrentPlayer() {
-        return this.currentPlayer;
-    }
-
-    public Player getTargetPlayer() {
-        return this.targetPlayer;
-    }
-
-    public List<Card> getTargetPlayerDeck() {
-        return this.targetPlayerDeck;
     }
 }

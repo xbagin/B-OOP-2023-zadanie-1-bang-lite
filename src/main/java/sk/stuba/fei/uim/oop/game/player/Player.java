@@ -1,6 +1,5 @@
 package sk.stuba.fei.uim.oop.game.player;
 
-import sk.stuba.fei.uim.oop.game.BangLite;
 import sk.stuba.fei.uim.oop.game.cards.Card;
 import sk.stuba.fei.uim.oop.game.cards.blueCards.Barrel;
 import sk.stuba.fei.uim.oop.game.cards.blueCards.BlueCard;
@@ -25,7 +24,7 @@ public class Player {
         this.cardsOnTable = new ArrayList<>();
     }
 
-    public boolean dealWithBang(BangLite bangLite) {
+    public boolean dealWithBang() {
         //barrel
         for (Card card : this.cardsOnTable) {
             if (card instanceof Barrel) {
@@ -39,7 +38,7 @@ public class Player {
         //missed
         for (Card card : this.cardsInHand) {
             if (card instanceof Missed) {
-                card.play(bangLite);
+                card.play();
                 this.informUsingCard(card);
                 return this.isAlive();
             }

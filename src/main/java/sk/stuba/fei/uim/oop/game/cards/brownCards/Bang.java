@@ -1,15 +1,26 @@
 package sk.stuba.fei.uim.oop.game.cards.brownCards;
 
 import sk.stuba.fei.uim.oop.game.BangLite;
+import sk.stuba.fei.uim.oop.game.cards.Card;
+import sk.stuba.fei.uim.oop.game.player.Player;
+
+import java.util.List;
 
 public class Bang extends BrownCard {
+    private final Player targetPlayer;
+
+    public Bang(Player currentPlayer, List<Card> deck, Player targetPlayer) {
+        super(currentPlayer, deck);
+        this.targetPlayer = targetPlayer;
+    }
+
     @Override
-    public void play(BangLite bangLite) {
-        super.play(bangLite);
-        if (bangLite.getTargetPlayer().dealWithBang(bangLite)) {
+    public void play() {
+        super.play();
+        if (this.targetPlayer.dealWithBang()) {
             return;
         }
-        bangLite.getCurrentPlayer().drawCards(BangLite.CARDS_TO_DRAW_WHEN_KILL_COUNT, bangLite.getDeck());
+        this.currentPlayer.drawCards(BangLite.CARDS_TO_DRAW_WHEN_KILL_COUNT, this.deck);
     }
 
     @Override

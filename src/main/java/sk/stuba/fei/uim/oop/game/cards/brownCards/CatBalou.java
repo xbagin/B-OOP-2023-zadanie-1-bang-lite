@@ -1,33 +1,37 @@
 package sk.stuba.fei.uim.oop.game.cards.brownCards;
 
-import sk.stuba.fei.uim.oop.game.BangLite;
 import sk.stuba.fei.uim.oop.game.cards.Card;
+import sk.stuba.fei.uim.oop.game.player.Player;
 
 import java.util.List;
 import java.util.Random;
 
 public class CatBalou extends BrownCard {
+    private final Player targetPlayer;
+    private final List<Card> targetPlayerDeck;
     private final Random cardNumber;
 
-    public CatBalou() {
+    public CatBalou(Player currentPlayer, List<Card> deck, Player targetPlayer, List<Card> targetPlayerDeck) {
+        super(currentPlayer, deck);
+        this.targetPlayer = targetPlayer;
+        this.targetPlayerDeck = targetPlayerDeck;
         this.cardNumber = new Random();
     }
 
     @Override
-    public void play(BangLite bangLite) {
-        super.play(bangLite);
-        List<Card> playerDeck = bangLite.getTargetPlayerDeck();
-        bangLite.getDeck().add(
-                playerDeck.remove(this.cardNumber.nextInt(playerDeck.size()))
+    public void play() {
+        super.play();
+        this.deck.add(
+                this.targetPlayerDeck.remove(this.cardNumber.nextInt(this.targetPlayerDeck.size()))
         );
     }
 
     @Override
-    public boolean isPlayable(BangLite bangLite) {
-        if (bangLite.getTargetPlayerDeck() == null) {
-            return !bangLite.getTargetPlayer().getCardsOnTable().isEmpty() || !bangLite.getTargetPlayer().getCardsInHand().isEmpty();
+    public boolean isPlayable() {
+        if (this.targetPlayerDeck == null) {
+            return !this.targetPlayer.getCardsOnTable().isEmpty() || !this.targetPlayer.getCardsInHand().isEmpty();
         } else {
-            return !bangLite.getTargetPlayerDeck().isEmpty();
+            return !this.targetPlayerDeck.isEmpty();
         }
     }
 
