@@ -19,9 +19,9 @@ public class Indians extends BrownCard {
     public void play() {
         super.play();
         this.players.forEach(player -> {
-            if (!Objects.equals(player, this.currentPlayer)) {
+            if (!Objects.equals(player, this.player)) {
                 if (!player.dealWithIndians(this.deck)) {
-                    this.currentPlayer.drawCards(BangLite.CARDS_TO_DRAW_WHEN_KILL_COUNT, this.deck);
+                    this.player.drawCards(BangLite.CARDS_TO_DRAW_WHEN_KILL_COUNT, this.deck);
                 }
             }
         });

@@ -13,6 +13,6 @@ public class Beer extends BrownCard {
     @Override
     public void play() {
         super.play();
-        this.currentPlayer.addLive();
+        this.player.addLive();
     }
 }

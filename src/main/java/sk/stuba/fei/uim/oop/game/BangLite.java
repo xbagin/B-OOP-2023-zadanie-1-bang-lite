@@ -212,40 +212,10 @@ public class BangLite {
         }
     }
 
-    private Player getPreviousPlayer() {
-        return this.players.get(
-                (this.players.indexOf(this.currentPlayer) + this.players.size() - 1) % this.players.size()
-        );
-    }
-
     private void checkEffects() {
         this.playerCanPlay = true;
         List<Card> toRemove = new ArrayList<>();
-        this.currentPlayer.getCardsOnTable().forEach(card -> {
-            if (card instanceof Dynamite) {
-                if (((BlueCard) card).hasEffect()) {
-                    System.out.println(card.getClass().getSimpleName() + "exploded!");
-                    for (int i = 0; i < Dynamite.LIVES_TO_REMOVE_COUNT; i++) {
-                        this.currentPlayer.removeLive();
-                    }
-                    this.deck.add(card);
-                    if (!this.currentPlayer.isAlive()) {
-                        System.out.println(this.currentPlayer.getName() + " (you) lost!");
-                        this.playerCanPlay = false;
-                    }
-                } else {
-                    toRemove.add(card);  // this.currentPlayer.getCardsOnTable().remove(card);  ConcurrentModificationException
-                    this.getPreviousPlayer().getCardsOnTable().add(card);
-                }
-            } else if (card instanceof Prison) {
-                if (!((BlueCard) card).hasEffect()) {
-                    System.out.println(this.currentPlayer.getName() + " did not escape from the prison.");
-                    this.playerCanPlay = false;
-                } else {
-                    System.out.println(this.currentPlayer.getName() + " escaped from the prison.");
-                }
-            }
-        });
+        this.currentPlayer.getCardsOnTable().forEach(card -> this.playerCanPlay = this.playerCanPlay && ((BlueCard) card).applyEffect(toRemove));
         this.currentPlayer.getCardsOnTable().removeAll(toRemove);
     }
 
@@ -290,13 +260,13 @@ public class BangLite {
 
     private void addBlueCards() {
         for (int i = 0; i < BangLite.BARREL_COUNT; i++) {
-            this.deck.add(new Barrel(this.currentPlayer));
+            this.deck.add(new Barrel(this.currentPlayer, this.deck));
         }
         for (int i = 0; i < BangLite.DYNAMITE_COUNT; i++) {
-            this.deck.add(new Dynamite(this.currentPlayer));
+            this.deck.add(new Dynamite(this.currentPlayer, this.deck, this.players));
         }
         for (int i = 0; i < BangLite.PRISON_COUNT; i++) {
-            this.deck.add(new Prison(this.targetPlayer));
+            this.deck.add(new Prison(this.targetPlayer, this.deck));
         }
     }
 

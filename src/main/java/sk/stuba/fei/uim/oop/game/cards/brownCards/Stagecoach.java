@@ -15,6 +15,6 @@ public class Stagecoach extends BrownCard {
     @Override
     public void play() {
         super.play();
-        this.currentPlayer.drawCards(Stagecoach.CARDS_TO_DRAW_COUNT, this.deck);
+        this.player.drawCards(Stagecoach.CARDS_TO_DRAW_COUNT, this.deck);
     }
 }

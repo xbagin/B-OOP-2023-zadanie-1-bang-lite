@@ -20,7 +20,7 @@ public class Bang extends BrownCard {
         if (this.targetPlayer.dealWithBang()) {
             return;
         }
-        this.currentPlayer.drawCards(BangLite.CARDS_TO_DRAW_WHEN_KILL_COUNT, this.deck);
+        this.player.drawCards(BangLite.CARDS_TO_DRAW_WHEN_KILL_COUNT, this.deck);
     }
 
     @Override
