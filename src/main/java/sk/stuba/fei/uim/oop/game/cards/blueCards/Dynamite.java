@@ -1,32 +1,30 @@
 package sk.stuba.fei.uim.oop.game.cards.blueCards;
 
+import sk.stuba.fei.uim.oop.game.BangLite;
 import sk.stuba.fei.uim.oop.game.cards.Card;
 import sk.stuba.fei.uim.oop.game.player.Player;
 
 import java.util.List;
 
 public class Dynamite extends BlueCard {
-    private final List<Player> players;
-
     private static final int PROBABILITY_ONE_IN = 8;
     public static final int LIVES_TO_REMOVE_COUNT = 3;
 
-    public Dynamite(Player currentPlayer, List<Card> deck, List<Player> players) {
-        super(Dynamite.PROBABILITY_ONE_IN, currentPlayer, deck);
-        this.players = players;
+    public Dynamite(BangLite bangLite) {
+        super(Dynamite.PROBABILITY_ONE_IN, bangLite);
     }
 
     @Override
     public boolean applyEffect(List<Card> toRemove) {
         toRemove.add(this);  // this.player.getCardsOnTable().remove(this);  ConcurrentModificationException
         if (this.hasEffect()) {
-            this.deck.add(this);
+            this.game.getDeck().add(this);
             for (int i = 0; i < Dynamite.LIVES_TO_REMOVE_COUNT; i++) {
-                this.player.removeLive();
+                this.game.getCurrentPlayer().removeLive();
             }
             System.out.println(this.getClass().getSimpleName() + "exploded!");
-            if (!this.player.isAlive()) {
-                System.out.println(this.player.getName() + " (you) lost!");
+            if (!this.game.getCurrentPlayer().isAlive()) {
+                System.out.println(this.game.getCurrentPlayer().getName() + " (you) lost!");
                 return false;
             }
         } else {
@@ -36,8 +34,15 @@ public class Dynamite extends BlueCard {
     }
 
     private Player getPreviousPlayer() {
-        return this.players.get(
-                (this.players.indexOf(this.player) + this.players.size() - 1) % this.players.size()
+        List<Player> players = this.game.getPlayers();
+        return players.get(
+                (players.indexOf(this.game.getCurrentPlayer()) + players.size() - 1) % players.size()
         );
+    }
+
+    @Override
+    public void play() {
+        super.play();
+        this.game.getCurrentPlayer().getCardsOnTable().add(this);
     }
 }

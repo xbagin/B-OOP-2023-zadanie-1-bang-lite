@@ -1,23 +1,17 @@
 package sk.stuba.fei.uim.oop.game.cards.brownCards;
 
-import sk.stuba.fei.uim.oop.game.cards.Card;
-import sk.stuba.fei.uim.oop.game.player.Player;
-
-import java.util.List;
+import sk.stuba.fei.uim.oop.game.BangLite;
 
 public class Missed extends BrownCard {
-    private final Player targetPlayer;
-
-    public Missed(Player currentPlayer, List<Card> deck, Player targetPlayer) {
-        super(currentPlayer, deck);
-        this.targetPlayer = targetPlayer;
+    public Missed(BangLite bangLite) {
+        super(bangLite);
     }
 
     @Override
     public void play() {
-        if (this.targetPlayer != null) {
-            this.targetPlayer.getCardsInHand().remove(this);
-            this.deck.add(this);
+        if (this.game.getTargetPlayer() != null) {
+            this.game.getTargetPlayer().getCardsInHand().remove(this);
+            this.game.getDeck().add(this);
         } else {  // current player stupidly waste the card
             super.play();
         }

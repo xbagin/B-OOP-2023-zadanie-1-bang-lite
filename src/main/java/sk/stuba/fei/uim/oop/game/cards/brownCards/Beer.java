@@ -1,18 +1,15 @@
 package sk.stuba.fei.uim.oop.game.cards.brownCards;
 
-import sk.stuba.fei.uim.oop.game.cards.Card;
-import sk.stuba.fei.uim.oop.game.player.Player;
-
-import java.util.List;
+import sk.stuba.fei.uim.oop.game.BangLite;
 
 public class Beer extends BrownCard {
-    public Beer(Player currentPlayer, List<Card> deck) {
-        super(currentPlayer, deck);
+    public Beer(BangLite bangLite) {
+        super(bangLite);
     }
 
     @Override
     public void play() {
         super.play();
-        this.player.addLive();
+        this.game.getCurrentPlayer().addLive();
     }
 }

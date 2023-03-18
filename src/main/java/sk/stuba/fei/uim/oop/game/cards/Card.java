@@ -1,16 +1,12 @@
 package sk.stuba.fei.uim.oop.game.cards;
 
-import sk.stuba.fei.uim.oop.game.player.Player;
-
-import java.util.List;
+import sk.stuba.fei.uim.oop.game.BangLite;
 
 abstract public class Card implements Playable {
-    protected final Player player;
-    protected final List<Card> deck;
+    protected final BangLite game;
 
-    protected Card(Player player, List<Card> deck) {
-        this.player = player;
-        this.deck = deck;
+    protected Card(BangLite bangLite) {
+        this.game = bangLite;
     }
 
     @Override
