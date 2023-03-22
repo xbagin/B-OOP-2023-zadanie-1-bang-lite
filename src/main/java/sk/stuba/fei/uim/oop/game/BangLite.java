@@ -15,12 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class BangLite {
-    private final List<Card> deck;
-    private final List<Player> players;
-    private Player currentPlayer;
-    private Player targetPlayer;
-    private List<Card> targetPlayerDeck;
-    private boolean playerCanPlay;
+    private final GameValues values;
 
     public static final int CARDS_TO_DRAW_WHEN_KILL_COUNT = 2;
     public static final int CARDS_TO_DRAW_AT_THE_START_OF_TURN_COUNT = 2;
@@ -38,12 +33,7 @@ public class BangLite {
     private static final int INITIAL_PLAYER_CARDS_COUNT = 4;
 
     public BangLite() {
-        this.deck = new ArrayList<>();
-        this.players = new ArrayList<>();
-        this.currentPlayer = null;
-        this.targetPlayer = null;
-        this.targetPlayerDeck = null;
-        this.playerCanPlay = false;
+        this.values = new GameValues();
         this.preparation();
         this.game();
     }
@@ -56,24 +46,24 @@ public class BangLite {
 
     private void game() {
         while (this.playersAlive() > 1) {
-            System.out.println("\nTurn of " + this.currentPlayer.getName() + ":");
+            System.out.println("\nTurn of " + this.values.getCurrentPlayer().getName() + ":");
             this.checkEffects();
-            if (this.playerCanPlay) {
+            if (this.values.getPlayerCanPlay()) {
                 this.printTable();
                 this.drawCards();
                 this.playCards();
                 this.discardExcessCards();
             }
             this.removeDeathPlayers();
-            this.currentPlayer = this.nextPlayer();
+            this.values.setCurrentPlayer(this.nextPlayer());
         }
         this.showWinner();
     }
 
     private void printTable() {
         System.out.println();
-        this.players.forEach(player -> {
-            System.out.println(player.getName() + (Objects.equals(player, this.currentPlayer) ? " (you):" : ":"));
+        this.values.getPlayers().forEach(player -> {
+            System.out.println(player.getName() + (Objects.equals(player, this.values.getCurrentPlayer()) ? " (you):" : ":"));
             System.out.println("  Lives: " + player.getLives());
             System.out.print("  Cards on table: ");
             for (Card card : player.getCardsOnTable()) {
@@ -86,8 +76,8 @@ public class BangLite {
 
     private void printHand() {
         System.out.print("\nYour cards: ");
-        for (int i = 0; i < this.currentPlayer.getCardsInHand().size(); i++) {
-            System.out.print("[" + (i + 1) + "] " + this.currentPlayer.getCardsInHand().get(i).getClass().getSimpleName() + " ");
+        for (int i = 0; i < this.values.getCurrentPlayer().getCardsInHand().size(); i++) {
+            System.out.print("[" + (i + 1) + "] " + this.values.getCurrentPlayer().getCardsInHand().get(i).getClass().getSimpleName() + " ");
         }
         System.out.println();
     }
@@ -102,7 +92,7 @@ public class BangLite {
 
     private void showWinner() {
         Player winner = null;
-        for (Player player : this.players) {
+        for (Player player : this.values.getPlayers()) {
             if (player.isAlive()) {
                 winner = player;
                 break;
@@ -116,19 +106,19 @@ public class BangLite {
     }
 
     private void removeDeathPlayers() {
-        this.players.removeAll(this.collectCardOfDeathPlayers());
+        this.values.getPlayers().removeAll(this.collectCardOfDeathPlayers());
     }
 
     private List<Player> collectCardOfDeathPlayers() {
         List<Player> deathPlayers = new ArrayList<>();
-        this.players.forEach(player -> {
+        this.values.getPlayers().forEach(player -> {
             if (!player.isAlive()) {
                 if (!player.getCardsOnTable().isEmpty()) {
-                    this.deck.addAll(player.getCardsInHand());
+                    this.values.getDiscardPile().addAll(player.getCardsInHand());
                     player.getCardsInHand().clear();
                 }
                 if (!player.getCardsOnTable().isEmpty()) {
-                    this.deck.addAll(player.getCardsOnTable());
+                    this.values.getDiscardPile().addAll(player.getCardsOnTable());
                     player.getCardsOnTable().clear();
                 }
                 deathPlayers.add(player);
@@ -138,14 +128,15 @@ public class BangLite {
     }
 
     private void discardExcessCards() {
-        while (this.currentPlayer.getCardsInHand().size() > this.currentPlayer.getLives()) {
+        Player player = this.values.getCurrentPlayer();
+        while (player.getCardsInHand().size() > player.getLives()) {
             int position;
             do {
                 this.printHand();
                 position = KeyboardInput.readInt("Enter the card to discard");
-            } while (!(position > 0 && position <= this.currentPlayer.getCardsInHand().size()));
+            } while (!(position > 0 && position <= player.getCardsInHand().size()));
 
-            this.currentPlayer.getCardsInHand().remove(position - 1);
+            player.getCardsInHand().remove(position - 1);
         }
     }
 
@@ -153,15 +144,16 @@ public class BangLite {
         int position;  // 0 - play no card
         do {
             this.printHand();
+            Player currentPlayer = this.values.getCurrentPlayer();
             do {
                 position = KeyboardInput.readInt("Enter the card to play or 0 to end the turn");
-            } while (!(position >= 0 && position <= this.currentPlayer.getCardsInHand().size()));
+            } while (!(position >= 0 && position <= currentPlayer.getCardsInHand().size()));
 
             if (position > 0) {
-                Card card = this.currentPlayer.getCardsInHand().get(position - 1);
+                Card card = currentPlayer.getCardsInHand().get(position - 1);
                 if (card.requireTargetPlayer()) {
-                    List<Player> targetPlayers = new ArrayList<>(this.players);
-                    targetPlayers.remove(this.currentPlayer);
+                    List<Player> targetPlayers = new ArrayList<>(this.values.getPlayers());
+                    targetPlayers.remove(currentPlayer);
                     targetPlayers.removeIf(player -> !player.isAlive());
                     if (targetPlayers.isEmpty()) {
                         System.out.println("This card can not be played.");
@@ -172,21 +164,22 @@ public class BangLite {
                         this.printTargetPlayers(targetPlayers);
                         decision = KeyboardInput.readInt("Enter the target player");
                     } while (!(decision >= 1 && decision <= targetPlayers.size()));
-                    this.targetPlayer = targetPlayers.get(decision - 1);
+                    this.values.setTargetPlayer(targetPlayers.get(decision - 1));
                 }
                 if (card.requireTargetPlayerDeck()) {
                     if (card.isPlayable()) {
-                        boolean inHand = !this.targetPlayer.getCardsInHand().isEmpty();
-                        boolean onTable = !this.targetPlayer.getCardsOnTable().isEmpty();
+                        Player targetPlayer = this.values.getTargetPlayer();
+                        boolean inHand = !targetPlayer.getCardsInHand().isEmpty();
+                        boolean onTable = !targetPlayer.getCardsOnTable().isEmpty();
                         if (inHand && !onTable) {
-                            this.targetPlayerDeck = this.targetPlayer.getCardsInHand();
+                            this.values.setTargetPlayerDeck(targetPlayer.getCardsInHand());
                         } else if (onTable && !inHand) {
-                            this.targetPlayerDeck = this.targetPlayer.getCardsOnTable();
+                            this.values.setTargetPlayerDeck(targetPlayer.getCardsOnTable());
                         } else {
                             int decision;
                             do {
                                 decision = KeyboardInput.readInt("Enter 1 for removing the card from the hand or 2 for removing the card from the table");
-                                this.targetPlayerDeck = decision == 1 ? this.targetPlayer.getCardsInHand() : this.targetPlayer.getCardsOnTable();
+                                this.values.setTargetPlayerDeck(decision == 1 ? targetPlayer.getCardsInHand() : targetPlayer.getCardsOnTable());
                             } while (!(decision >= 1 && decision <= 2));
                         }
                     }
@@ -194,40 +187,49 @@ public class BangLite {
                 if (card.isPlayable()) {
                     card.play();
                 } else {
-                    System.out.println("This card can not be played" + (this.targetPlayer != null ? "on this player." : "."));
+                    System.out.println("This card can not be played" + (this.values.getTargetPlayer() != null ? " on this player." : "."));
                 }
-                if (this.targetPlayer != null && !this.targetPlayer.isAlive()) {
-                    System.out.println(this.targetPlayer.getName() + " lost!");
+                if (this.values.getTargetPlayer() != null && !this.values.getTargetPlayer().isAlive()) {
+                    System.out.println(this.values.getTargetPlayer().getName() + " lost!");
                 }
             }
-            this.targetPlayer = null;
-            this.targetPlayerDeck = null;
+            this.values.setTargetPlayer(null);
+            this.values.setTargetPlayerDeck(null);
             this.printTable();
         } while (position != 0);
     }
 
     private void drawCards() {
-        for (int i = 0; i < BangLite.CARDS_TO_DRAW_AT_THE_START_OF_TURN_COUNT; i++) {
-            this.currentPlayer.getCardsInHand().add(this.deck.remove(0));
-        }
+        this.values.getCurrentPlayer().getCardsInHand().addAll(this.values.drawCards(BangLite.CARDS_TO_DRAW_AT_THE_START_OF_TURN_COUNT));
     }
 
     private void checkEffects() {
-        this.playerCanPlay = true;
+        this.values.setPlayerCanPlay(true);
         List<Card> toRemove = new ArrayList<>();
-        this.currentPlayer.getCardsOnTable().forEach(card -> this.playerCanPlay = this.playerCanPlay && ((BlueCard) card).applyEffect(toRemove));
-        this.currentPlayer.getCardsOnTable().removeAll(toRemove);
+        List<Card> cardsOnTable = this.values.getCurrentPlayer().getCardsOnTable();
+        cardsOnTable.forEach(card -> {
+            if (card instanceof Dynamite) {
+                this.values.setPlayerCanPlay(this.values.getPlayerCanPlay() && ((BlueCard) card).applyEffect(toRemove));
+            }
+        });
+        cardsOnTable.forEach(card -> {
+            if (card instanceof Prison) {
+                this.values.setPlayerCanPlay(this.values.getPlayerCanPlay() && ((BlueCard) card).applyEffect(toRemove));
+            }
+        });
+        cardsOnTable.removeAll(toRemove);
     }
 
     private Player nextPlayer() {
-        return this.players.get(
-                (this.players.indexOf(this.currentPlayer) + 1) % this.players.size()
+        List<Player> players = this.values.getPlayers();
+        return players.get(
+                (players.indexOf(this.values.getCurrentPlayer()) + 1) % players.size()
         );
     }
 
     private int playersAlive() {
         int playersAlive = 0;
-        for (Player player : this.players) {
+        for (Player player : this.values.getPlayers()) {
             if (player.isAlive()) {
                 playersAlive++;
             }
@@ -242,15 +244,15 @@ public class BangLite {
         } while (!(playersCount >= BangLite.MINIMUM_PLAYERS_COUNT && playersCount <= BangLite.MAXIMUM_PLAYERS_COUNT));
 
         for (int i = 0; i < playersCount; i++) {
-            this.players.add(new Player("Player" + (i + 1)));
+            this.values.getPlayers().add(new Player("Player" + (i + 1)));
         }
 
-        this.players.forEach(player -> player.drawCards(BangLite.INITIAL_PLAYER_CARDS_COUNT, this.deck));
-        this.currentPlayer = this.players.get(0);
+        this.values.getPlayers().forEach(player -> player.drawCards(BangLite.INITIAL_PLAYER_CARDS_COUNT, this.values));
+        this.values.setCurrentPlayer(this.values.getPlayers().get(0));
     }
 
     private void shuffleDeck() {
-        Collections.shuffle(this.deck);
+        Collections.shuffle(this.values.getDeck());
     }
 
     private void createDeck() {
@@ -259,55 +261,37 @@ public class BangLite {
     }
 
     private void addBlueCards() {
+        List<Card> deck = this.values.getDeck();
         for (int i = 0; i < BangLite.BARREL_COUNT; i++) {
-            this.deck.add(new Barrel(this));
+            deck.add(new Barrel(this.values));
         }
         for (int i = 0; i < BangLite.DYNAMITE_COUNT; i++) {
-            this.deck.add(new Dynamite(this));
+            deck.add(new Dynamite(this.values));
         }
         for (int i = 0; i < BangLite.PRISON_COUNT; i++) {
-            this.deck.add(new Prison(this));
+            deck.add(new Prison(this.values));
         }
     }
 
     private void addBrownCards() {
+        List<Card> deck = this.values.getDeck();
         for (int i = 0; i < BangLite.BANG_COUNT; i++) {
-            this.deck.add(new Bang(this));
+            deck.add(new Bang(this.values));
         }
         for (int i = 0; i < BangLite.MISSED_COUNT; i++) {
-            this.deck.add(new Missed(this));
+            deck.add(new Missed(this.values));
         }
         for (int i = 0; i < BangLite.BEER_COUNT; i++) {
-            this.deck.add(new Beer(this));
+            deck.add(new Beer(this.values));
         }
         for (int i = 0; i < BangLite.CAT_BALOU_COUNT; i++) {
-            this.deck.add(new CatBalou(this));
+            deck.add(new CatBalou(this.values));
         }
         for (int i = 0; i < BangLite.STAGECOACH_COUNT; i++) {
-            this.deck.add(new Stagecoach(this));
+            deck.add(new Stagecoach(this.values));
         }
         for (int i = 0; i < BangLite.INDIANS_COUNT; i++) {
-            this.deck.add(new Indians(this));
+            deck.add(new Indians(this.values));
         }
-    }
-
-    public List<Card> getDeck() {
-        return this.deck;
-    }
-
-    public List<Player> getPlayers() {
-        return this.players;
-    }
-
-    public Player getCurrentPlayer() {
-        return this.currentPlayer;
-    }
-
-    public Player getTargetPlayer() {
-        return this.targetPlayer;
-    }
-
-    public List<Card> getTargetPlayerDeck() {
-        return this.targetPlayerDeck;
     }
 }

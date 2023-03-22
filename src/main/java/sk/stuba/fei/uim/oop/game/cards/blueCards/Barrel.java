@@ -1,6 +1,6 @@
 package sk.stuba.fei.uim.oop.game.cards.blueCards;
 
-import sk.stuba.fei.uim.oop.game.BangLite;
+import sk.stuba.fei.uim.oop.game.GameValues;
 import sk.stuba.fei.uim.oop.game.cards.Card;
 
 import java.util.Objects;
@@ -8,7 +8,7 @@ import java.util.Objects;
 public class Barrel extends BlueCard {
     private static final int PROBABILITY_ONE_IN = 4;
 
-    public Barrel(BangLite bangLite) {
+    public Barrel(GameValues bangLite) {
         super(Barrel.PROBABILITY_ONE_IN, bangLite);
     }
 

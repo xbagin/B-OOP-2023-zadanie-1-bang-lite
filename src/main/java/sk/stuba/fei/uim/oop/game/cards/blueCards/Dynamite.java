@@ -1,6 +1,6 @@
 package sk.stuba.fei.uim.oop.game.cards.blueCards;
 
-import sk.stuba.fei.uim.oop.game.BangLite;
+import sk.stuba.fei.uim.oop.game.GameValues;
 import sk.stuba.fei.uim.oop.game.cards.Card;
 import sk.stuba.fei.uim.oop.game.player.Player;
 
@@ -10,7 +10,7 @@ public class Dynamite extends BlueCard {
     private static final int PROBABILITY_ONE_IN = 8;
     public static final int LIVES_TO_REMOVE_COUNT = 3;
 
-    public Dynamite(BangLite bangLite) {
+    public Dynamite(GameValues bangLite) {
         super(Dynamite.PROBABILITY_ONE_IN, bangLite);
     }
 
@@ -18,7 +18,7 @@ public class Dynamite extends BlueCard {
     public boolean applyEffect(List<Card> toRemove) {
         toRemove.add(this);  // this.player.getCardsOnTable().remove(this);  ConcurrentModificationException
         if (this.hasEffect()) {
-            this.game.getDeck().add(this);
+            this.game.getDiscardPile().add(this);
             for (int i = 0; i < Dynamite.LIVES_TO_REMOVE_COUNT; i++) {
                 this.game.getCurrentPlayer().removeLive();
             }

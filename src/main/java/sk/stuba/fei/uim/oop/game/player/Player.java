@@ -1,5 +1,6 @@
 package sk.stuba.fei.uim.oop.game.player;
 
+import sk.stuba.fei.uim.oop.game.GameValues;
 import sk.stuba.fei.uim.oop.game.cards.Card;
 import sk.stuba.fei.uim.oop.game.cards.blueCards.Barrel;
 import sk.stuba.fei.uim.oop.game.cards.blueCards.BlueCard;
@@ -50,13 +51,13 @@ public class Player {
         return this.isAlive();
     }
 
-    public boolean dealWithIndians(List<Card> deck) {
+    public boolean dealWithIndians(List<Card> pile) {
         boolean bangFound = false;
         List<Card> toRemove = new ArrayList<>();
         for (Card card : this.cardsInHand) {
             if (card instanceof Bang) {
                 toRemove.add(card);  // this.cardsInHand.remove(card);  ConcurrentModificationException
-                deck.add(card);
+                pile.add(card);
                 bangFound = true;
                 this.informUsingCard(card);
                 break;
@@ -70,10 +71,8 @@ public class Player {
         return this.isAlive();
     }
 
-    public void drawCards(int numberOfCards, List<Card> deck) {
-        for (int i = 0; i < numberOfCards; i++) {
-            this.cardsInHand.add(deck.remove(0));
-        }
+    public void drawCards(int numberOfCards, GameValues game) {
+        this.cardsInHand.addAll(game.drawCards(numberOfCards));
     }
 
     public int getLives() {

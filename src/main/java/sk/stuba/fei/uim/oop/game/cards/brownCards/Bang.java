@@ -1,9 +1,10 @@
 package sk.stuba.fei.uim.oop.game.cards.brownCards;
 
 import sk.stuba.fei.uim.oop.game.BangLite;
+import sk.stuba.fei.uim.oop.game.GameValues;
 
 public class Bang extends BrownCard {
-    public Bang(BangLite bangLite) {
+    public Bang(GameValues bangLite) {
         super(bangLite);
     }
 
@@ -13,7 +14,7 @@ public class Bang extends BrownCard {
         if (this.game.getTargetPlayer().dealWithBang()) {
             return;
         }
-        this.game.getCurrentPlayer().drawCards(BangLite.CARDS_TO_DRAW_WHEN_KILL_COUNT, this.game.getDeck());
+        this.game.getCurrentPlayer().drawCards(BangLite.CARDS_TO_DRAW_WHEN_KILL_COUNT, this.game);
     }
 
     @Override

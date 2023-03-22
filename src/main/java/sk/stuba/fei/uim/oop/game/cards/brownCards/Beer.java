@@ -1,9 +1,9 @@
 package sk.stuba.fei.uim.oop.game.cards.brownCards;
 
-import sk.stuba.fei.uim.oop.game.BangLite;
+import sk.stuba.fei.uim.oop.game.GameValues;
 
 public class Beer extends BrownCard {
-    public Beer(BangLite bangLite) {
+    public Beer(GameValues bangLite) {
         super(bangLite);
     }
 

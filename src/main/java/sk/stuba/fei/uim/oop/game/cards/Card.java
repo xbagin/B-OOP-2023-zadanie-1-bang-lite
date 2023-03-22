@@ -1,11 +1,11 @@
 package sk.stuba.fei.uim.oop.game.cards;
 
-import sk.stuba.fei.uim.oop.game.BangLite;
+import sk.stuba.fei.uim.oop.game.GameValues;
 
 abstract public class Card implements Playable {
-    protected final BangLite game;
+    protected final GameValues game;
 
-    protected Card(BangLite bangLite) {
+    protected Card(GameValues bangLite) {
         this.game = bangLite;
     }
 

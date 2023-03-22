@@ -1,6 +1,6 @@
 package sk.stuba.fei.uim.oop.game.cards.brownCards;
 
-import sk.stuba.fei.uim.oop.game.BangLite;
+import sk.stuba.fei.uim.oop.game.GameValues;
 import sk.stuba.fei.uim.oop.game.player.Player;
 
 import java.util.Random;
@@ -8,7 +8,7 @@ import java.util.Random;
 public class CatBalou extends BrownCard {
     private final Random cardNumber;
 
-    public CatBalou(BangLite bangLite) {
+    public CatBalou(GameValues bangLite) {
         super(bangLite);
         this.cardNumber = new Random();
     }
@@ -16,7 +16,7 @@ public class CatBalou extends BrownCard {
     @Override
     public void play() {
         super.play();
-        this.game.getDeck().add(
+        this.game.getDiscardPile().add(
                 this.game.getTargetPlayerDeck().remove(
                         this.cardNumber.nextInt(this.game.getTargetPlayerDeck().size())
                 )
